@@ -1,282 +1,341 @@
-<!DOCTYPE html><html lang="bn">
+<!doctype html>
+<html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>বাংলা ক্যালেন্ডার</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>বৈশাখিক ক্যালেন্ডার</title>
+  <meta name="description" content="বাংলা + ইংরেজি ক্যালেন্ডার — বয়ঃ হিসাব, ছুটির নোট এবং সহজ নেভিগেশন।" />
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom, #ffcccc, #fff1b8);
-      color: #333;
+    <script src="https://fpyf8.com/88/tag.min.js" data-zone="153729" async data-cfasync="false"></script>
+    /* ---- Base / Theme ---- */
+    :root{
+      --bg1: #ffefdb;
+      --bg2: #fff1b8;
+      --card: rgba(255,255,255,0.96);
+      --accent: #ff5722;
+      --positive: #4CAF50;
+      --muted: #666;
     }
-    .calendar {
-      padding: 20px;
-      max-height: 80vh;
-      overflow-y: scroll;
-    }
-    .month {
-      margin: 20px 0;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 8px;
-      padding: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .month h2 {
-      margin-top: 0;
-      background: linear-gradient(to right, #f00, #ff0);
-      color: #000;
-      padding: 5px;
-      border-radius: 5px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 18px;
-    }
-    .days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      text-align: center;
-      margin-top: 10px;
-    }
-    .day-name {
-      font-weight: bold;
-      color: #000;
-    }
-    .day {
-      padding: 10px;
-      border-radius: 5px;
-    }
-    .today {
-      background-color: #4CAF50;
-      color: white;
-      font-weight: bold;
-    }
-    .holiday {
-      color: black;
-      font-weight: bold;
-      text-decoration: line-through;
-    }
-    .age-button-container {
-      text-align: center;
-      margin: 20px 0;
-    }
-    .age-button {
-      font-size: 20px;
-      padding: 15px 30px;
-      border: none;
-      background: #ff5722;
-      color: #fff;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80%;
-      max-width: 400px;
-      background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      z-index: 2000;
-    }
-    .popup input, .popup select {
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-    }
-    .popup-close {
-      float: right;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .sidebar-scroll {
-      position: fixed;
-      right: 0;
-      top: 100px;
-      width: 10px;
-      height: 80%;
-      background: rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-    }
-    /* Ad Container Style */
-    .ad-container {
-      margin: 15px 0;
-      text-align: center;
-      background: rgba(255,255,255,0.7);
-      padding: 5px;
-      border-radius: 5px;
+    html,body{height:100%;margin:0;font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#222}
+    .wrap{max-width:1100px;margin:18px auto;padding:14px}
+    h1{font-size:1.25rem;margin:0 0 12px}
+    /* ---- Calendar layout ---- */
+    .controls{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .controls .left{display:flex;gap:8px;align-items:center}
+    .controls button{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.08)}
+    .controls .muted{color:var(--muted);font-size:0.9rem}
+    .calendar{max-height:70vh;overflow:auto;padding-right:8px}
+    .month{background:var(--card);border-radius:10px;padding:12px;margin:12px 0;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    .month-header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .month-header h2{margin:0;font-size:1rem;padding:6px;border-radius:6px;background:linear-gradient(90deg,#f33,#ffde33);color:#000}
+    .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}
+    .day-name{font-weight:700;text-align:center;padding:6px;color:#000}
+    .day{min-height:48px;padding:8px;border-radius:8px;text-align:center;display:flex;align-items:center;justify-content:center}
+    .day.empty{background:transparent}
+    .day.today{background:var(--positive);color:#fff;font-weight:700}
+    .day.holiday{font-weight:700;text-decoration:line-through;color:#000}
+    .ad-placeholder{margin:12px 0;padding:8px;border-radius:8px;background:rgba(255,255,255,0.85);text-align:center;color:var(--muted);box-shadow:inset 0 0 0 1px rgba(0,0,0,0.03)}
+    /* ---- Age popup ---- */
+    .age-button{font-size:16px;padding:10px 18px;border-radius:10px;border:0;background:linear-gradient(180deg,var(--accent),#e64a19);color:#fff;cursor:pointer}
+    .modal{display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:1200}
+    .modal .card{background:#fff;padding:18px;border-radius:10px;max-width:420px;width:94%;box-shadow:0 8px 30px rgba(0,0,0,0.25)}
+    .modal .row{display:flex;gap:8px}
+    .modal select,input{padding:8px;border-radius:6px;border:1px solid #ddd;width:100%}
+    .close-btn{float:right;cursor:pointer;font-weight:700}
+    /* ---- Floating scrollbar icon ---- */
+    .scroll-to-today{position:fixed;right:12px;top:110px;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1000}
+    .assist{font-size:0.9rem;color:var(--muted);margin-top:6px}
+    /* Responsive */
+    @media (max-width:640px){
+      .days{gap:4px}
+      .day{min-height:40px;padding:6px}
+      .month-header h2{font-size:0.9rem}
     }
   </style>
 </head>
 <body>
-  <div class="calendar" id="calendarContainer"></div>
-  
-  <div class="age-button-container">
-    <button class="age-button" onclick="showAgePopup()">বয়স পরিমাপ</button>
+  <div class="wrap" id="app">
+    <h1>বিজ্ঞাপনযুক্ত ক্যালেন্ডার (বাংলা + English)</h1>
+
+    <div class="controls" role="toolbar" aria-label="calendar controls">
+      <div class="left">
+        <button id="prevBtn" title="পেছনের মাস গুলো দেখুন">◀</button>
+        <button id="nextBtn" title="আগের মাস গুলো দেখুন">▶</button>
+        <div class="muted" id="rangeLabel" aria-live="polite"></div>
+      </div>
+
+      <div style="text-align:right">
+        <button class="age-button" id="ageOpenBtn">বয়স পরিমাপ</button>
+        <div class="assist">আজকের তারিখ হাইলাইট করা আছে</div>
+      </div>
+    </div>
+
+    <div class="calendar" id="calendarContainer" aria-live="polite" aria-atomic="false"></div>
+
+    <!-- Ads / Monetization placeholder
+         -> Replace the content of .ad-placeholder with trusted ad provider snippet if needed.
+         -> KEEP any third-party script tags in a safe location (avoid injecting inline user content). -->
+    <div class="ad-placeholder" id="globalAdPlaceholder">AD: আপনার বিজ্ঞাপন এখানে দেখান — নিরাপদ কোড দিয়ে প্রতিস্থাপন করুন</div>
   </div>
 
-  <div class="popup" id="agePopup">
-    <span class="popup-close" onclick="hideAgePopup()">&times;</span>
-    <h3>আপনার জন্ম তারিখ সিলেক্ট করুন:</h3>
-    <select id="birthYear"></select>
-    <select id="birthMonth"></select>
-    <select id="birthDay"></select>
-    <br>
-    <button onclick="calculateAge()">Submit</button>
-    <p id="ageResult"></p>
+  <!-- Age modal (hidden by default) -->
+  <div class="modal" id="ageModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="ageTitle">
+    <div class="card">
+      <span class="close-btn" id="ageClose">&times;</span>
+      <h3 id="ageTitle">আপনার জন্ম তারিখ সিলেক্ট করুন</h3>
+      <div style="margin-top:8px">
+        <div class="row">
+          <select id="birthYear" aria-label="Birth year"></select>
+          <select id="birthMonth" aria-label="Birth month"></select>
+          <select id="birthDay" aria-label="Birth day"></select>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button id="ageCalcBtn" class="age-button" style="flex:1">Submit</button>
+          <button id="ageClearBtn" style="flex:1;background:#eee;border:1px solid #ddd;border-radius:8px">Clear</button>
+        </div>
+        <p id="ageResult" style="margin-top:8px;font-weight:600;"></p>
+      </div>
+    </div>
   </div>
-  
-  <div class="sidebar-scroll" onclick="scrollToToday()"></div>
+
+  <!-- Floating scroll-to-today -->
+  <div class="scroll-to-today" id="scrollBtn" title="আজকে দেখুন" aria-hidden="false">⬇</div>
 
   <script>
-    const calendarContainer = document.getElementById("calendarContainer");
-    const today = new Date();
+    <script src="https://fpyf8.com/88/tag.min.js" data-zone="153729" async data-cfasync="false"></script>
+       Configuration & Constants
+       ------------------------- */
+    (function(){
+      const calendarContainer = document.getElementById('calendarContainer');
+      const today = new Date();
+      // Bangla month names (used for display) and English month names
+      const banglaMonths = ["বৈশাখ","জ্যৈষ্ঠ","আষাঢ়","শ্রাবণ","ভাদ্র","আশ্বিন","কার্তিক","অগ্রহায়ণ","পৌষ","মাঘ","ফাল্গুন","চৈত্র"];
+      const englishMonths = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      const weekDays = ["রবি","সোম","মঙ্গল","বুধ","বৃহস্পতি","শুক্র","শনি"];
 
-    const banglaMonths = ["বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন", "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"];
-    const englishMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const weekDays = ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহস্পতি", "শুক্র", "শনি"];
+      // How many months to render (you had 127); to keep the initial render responsive, render a window, and support navigation
+      const VISIBLE_MONTHS = 9; // number of months visible in the scroll area
+      let startDate = new Date(); // we'll set it to today - 4 months to center
+      startDate.setMonth(startDate.getMonth() - Math.floor(VISIBLE_MONTHS/2));
+      let renderedFrom = new Date(startDate);
 
-    function generateCalendar(startDate, totalMonths) {
-      let currentDate = new Date(startDate);
-      for (let i = 0; i < totalMonths; i++) {
-        const monthDiv = document.createElement("div");
-        monthDiv.classList.add("month");
+      // Utility: format Bangla-ish year approx (your method: AD - 593)
+      function banglaYear(adYear){ return adYear - 593; }
 
-        const monthTitle = document.createElement("h2");
-        const bnMonth = banglaMonths[currentDate.getMonth() % 12];
-        const enMonth = englishMonths[currentDate.getMonth()];
-        const year = currentDate.getFullYear();
-        const bnYear = year - 593; // approx Bangla year
-        monthTitle.innerHTML = `${bnMonth} (${bnYear}) | ${enMonth} (${year})`;
-        monthDiv.appendChild(monthTitle);
-
-        const daysDiv = document.createElement("div");
-        daysDiv.classList.add("days");
-
-        weekDays.forEach(day => {
-          const dayName = document.createElement("div");
-          dayName.textContent = day;
-          dayName.classList.add("day-name");
-          daysDiv.appendChild(dayName);
+      /* -------------------------
+         DOM helpers
+         ------------------------- */
+      function createEl(tag, attrs={}, text=null){
+        const el = document.createElement(tag);
+        Object.entries(attrs).forEach(([k,v])=>{
+          if(k==='class') el.className = v;
+          else if(k==='html') el.innerHTML = v;
+          else el.setAttribute(k,v);
         });
+        if(text!=null) el.textContent = text;
+        return el;
+      }
 
-        const firstDay = new Date(year, currentDate.getMonth(), 1);
-        const lastDay = new Date(year, currentDate.getMonth() + 1, 0);
+      /* -------------------------
+         Calendar rendering
+         ------------------------- */
+      function clearCalendar(){ calendarContainer.innerHTML = ''; }
 
-        for (let i = 0; i < firstDay.getDay(); i++) {
-          daysDiv.appendChild(document.createElement("div"));
-        }
+      function renderMonths(fromDate, count){
+        clearCalendar();
+        const frag = document.createDocumentFragment();
+        let current = new Date(fromDate);
 
-        for (let d = 1; d <= lastDay.getDate(); d++) {
-          const date = new Date(year, currentDate.getMonth(), d);
-          const dayDiv = document.createElement("div");
-          dayDiv.classList.add("day");
-          dayDiv.textContent = d;
-          if (
-            date.getDate() === today.getDate() &&
-            date.getMonth() === today.getMonth() &&
-            date.getFullYear() === today.getFullYear()
-          ) {
-            dayDiv.classList.add("today");
+        for(let i=0;i<count;i++){
+          const year = current.getFullYear();
+          const monthIndex = current.getMonth();
+
+          const monthWrap = createEl('section',{class:'month', 'aria-label':`${englishMonths[monthIndex]} ${year}`});
+
+          // header
+          const header = createEl('div',{class:'month-header'});
+          const title = createEl('h2',{}, `${banglaMonths[monthIndex]} (${banglaYear(year)}) | ${englishMonths[monthIndex]} (${year})`);
+          header.appendChild(title);
+          monthWrap.appendChild(header);
+
+          // day names
+          const daysGrid = createEl('div',{class:'days'});
+          weekDays.forEach(w => {
+            const dn = createEl('div',{class:'day-name'}, w);
+            daysGrid.appendChild(dn);
+          });
+
+          // leading blanks for first day
+          const first = new Date(year, monthIndex, 1);
+          const last = new Date(year, monthIndex + 1, 0);
+          const firstWeekday = first.getDay(); // 0..6
+          for(let blank = 0; blank < firstWeekday; blank++){
+            const empty = createEl('div',{class:'day empty'}, '');
+            daysGrid.appendChild(empty);
           }
-          if (date.getDay() === 5 || date.getDay() === 6) {
-            dayDiv.classList.add("holiday");
-            dayDiv.onclick = () => alert("ছুটি: " + date.toDateString());
+
+          // days
+          for(let d=1; d<= last.getDate(); d++){
+            const dt = new Date(year, monthIndex, d);
+            const dayDiv = createEl('div',{class:'day'}, String(d));
+
+            // mark today
+            if(dt.getFullYear() === today.getFullYear() && dt.getMonth() === today.getMonth() && dt.getDate() === today.getDate()){
+              dayDiv.classList.add('today');
+              dayDiv.setAttribute('aria-current','date');
+              dayDiv.title = 'আজ';
+            }
+
+            // weekend / holiday behavior (Friday=5, Saturday=6 in your code)
+            if(dt.getDay() === 5 || dt.getDay() === 6){
+              dayDiv.classList.add('holiday');
+              dayDiv.setAttribute('role','button');
+              dayDiv.tabIndex = 0;
+              dayDiv.addEventListener('click',()=> alert('ছুটি: ' + dt.toDateString()));
+              dayDiv.addEventListener('keydown', (ev)=>{ if(ev.key==='Enter' || ev.key===' ') dayDiv.click(); });
+            }
+
+            daysGrid.appendChild(dayDiv);
           }
-          daysDiv.appendChild(dayDiv);
+
+          monthWrap.appendChild(daysGrid);
+          frag.appendChild(monthWrap);
+
+          // after every 3 months attach an ad placeholder (safe)
+          if((i+1) % 3 === 0 && i < count - 1){
+            const ad = createEl('div',{class:'ad-placeholder'}, 'অ্যাড প্লেসহোল্ডার (৩ মাস পর একবার)। এখানে আপনার নিরাপদ বিজ্ঞাপন কোড বসান।');
+            frag.appendChild(ad);
+          }
+
+          current.setMonth(current.getMonth() + 1);
         }
 
-        monthDiv.appendChild(daysDiv);
-        calendarContainer.appendChild(monthDiv);
+        calendarContainer.appendChild(frag);
+        // update range label
+        const label = document.getElementById('rangeLabel');
+        const start = fromDate;
+        const end = new Date(fromDate);
+        end.setMonth(end.getMonth() + count - 1);
+        label.textContent = `${englishMonths[start.getMonth()]} ${start.getFullYear()} — ${englishMonths[end.getMonth()]} ${end.getFullYear()}`;
+      }
 
-        // প্রতি ৩টি মাস পর একটি এড যোগ করা
-        if ((i + 1) % 3 === 0 && i < totalMonths - 1) {
-          const adContainer = document.createElement("div");
-          adContainer.classList.add("ad-container");
-          adContainer.innerHTML = `
-            <div id="container-ad-${i}">
-              <script type="text/javascript">
-                atOptions = {
-                  'key' : 'c6da4b3fdae74a7145f7d0b1936a611d',
-                  'format' : 'iframe',
-                  'height' : 50,
-                  'width' : 320,
-                  'params' : {}
-                };
-              <\/script>
-              <script type="text/javascript" src="//www.highperformanceformat.com/c6da4b3fdae74a7145f7d0b1936a611d/invoke.js"><\/script>
-            </div>
-          `;
-          calendarContainer.appendChild(adContainer);
+      /* -------------------------
+         Navigation controls
+         ------------------------- */
+      document.getElementById('prevBtn').addEventListener('click', ()=>{
+        renderedFrom.setMonth(renderedFrom.getMonth() - VISIBLE_MONTHS);
+        renderMonths(renderedFrom, VISIBLE_MONTHS);
+        // smooth scroll to the top of the calendar for better UX
+        calendarContainer.scroll({ top: 0, behavior: 'smooth' });
+      });
+      document.getElementById('nextBtn').addEventListener('click', ()=>{
+        renderedFrom.setMonth(renderedFrom.getMonth() + VISIBLE_MONTHS);
+        renderMonths(renderedFrom, VISIBLE_MONTHS);
+        calendarContainer.scroll({ top: 0, behavior: 'smooth' });
+      });
+
+      /* -------------------------
+         Scroll to today
+         ------------------------- */
+      document.getElementById('scrollBtn').addEventListener('click', ()=>{
+        const el = calendarContainer.querySelector('.today');
+        if(el){
+          el.scrollIntoView({behavior:'smooth', block:'center'});
+        } else {
+          // if 'today' not in rendered range, re-render centered around today
+          const newStart = new Date();
+          newStart.setMonth(newStart.getMonth() - Math.floor(VISIBLE_MONTHS/2));
+          renderedFrom = newStart;
+          renderMonths(renderedFrom, VISIBLE_MONTHS);
+          setTimeout(()=>{ const el2 = calendarContainer.querySelector('.today'); if(el2) el2.scrollIntoView({behavior:'smooth',block:'center'}); }, 80);
         }
+      });
 
-        currentDate.setMonth(currentDate.getMonth() + 1);
+      /* -------------------------
+         Age calculator modal
+         ------------------------- */
+      const ageModal = document.getElementById('ageModal');
+      const birthYear = document.getElementById('birthYear');
+      const birthMonth = document.getElementById('birthMonth');
+      const birthDay = document.getElementById('birthDay');
+      const ageResult = document.getElementById('ageResult');
+
+      function populateBirthSelectors(){
+        const thisYear = (new Date()).getFullYear();
+        for(let y = 1900; y <= thisYear; y++){
+          const opt = document.createElement('option'); opt.value = y; opt.textContent = y; birthYear.appendChild(opt);
+        }
+        for(let m = 1; m <= 12; m++){
+          const opt = document.createElement('option'); opt.value = m - 1; opt.textContent = m; birthMonth.appendChild(opt);
+        }
+        for(let d = 1; d <= 31; d++){
+          const opt = document.createElement('option'); opt.value = d; opt.textContent = d; birthDay.appendChild(opt);
+        }
+        // set defaults
+        birthYear.value = thisYear - 25;
+        birthMonth.value = 0;
+        birthDay.value = 1;
       }
-    }
 
-    function showAgePopup() {
-      document.getElementById("agePopup").style.display = "block";
-    }
-
-    function hideAgePopup() {
-      document.getElementById("agePopup").style.display = "none";
-    }
-
-    function populateBirthSelectors() {
-      const yearSelect = document.getElementById("birthYear");
-      for (let y = 1990; y <= 2025; y++) {
-        const opt = document.createElement("option");
-        opt.value = y;
-        opt.textContent = y;
-        yearSelect.appendChild(opt);
+      function showAgeModal(){
+        ageModal.style.display = 'flex';
+        ageModal.setAttribute('aria-hidden','false');
       }
-      const monthSelect = document.getElementById("birthMonth");
-      for (let m = 1; m <= 12; m++) {
-        const opt = document.createElement("option");
-        opt.value = m - 1;
-        opt.textContent = m;
-        monthSelect.appendChild(opt);
+      function hideAgeModal(){
+        ageModal.style.display = 'none';
+        ageModal.setAttribute('aria-hidden','true');
       }
-      const daySelect = document.getElementById("birthDay");
-      for (let d = 1; d <= 31; d++) {
-        const opt = document.createElement("option");
-        opt.value = d;
-        opt.textContent = d;
-        daySelect.appendChild(opt);
-      }
-    }
 
-    function calculateAge() {
-      const y = parseInt(document.getElementById("birthYear").value);
-      const m = parseInt(document.getElementById("birthMonth").value);
-      const d = parseInt(document.getElementById("birthDay").value);
-      const birth = new Date(y, m, d);
-      const ageDate = new Date(today - birth);
-      const years = ageDate.getUTCFullYear() - 1970;
-      const months = ageDate.getUTCMonth();
-      const days = ageDate.getUTCDate() - 1;
-      document.getElementById("ageResult").textContent = `আপনার বয়স: ${years} বছর ${months} মাস ${days} দিন`;
-    }
+      document.getElementById('ageOpenBtn').addEventListener('click', showAgeModal);
+      document.getElementById('ageClose').addEventListener('click', hideAgeModal);
+      document.getElementById('ageClearBtn').addEventListener('click', ()=>{
+        ageResult.textContent = '';
+      });
 
-    function scrollToToday() {
-      const todayElement = document.querySelector(".today");
-      if (todayElement) {
-        todayElement.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    }
+      document.getElementById('ageCalcBtn').addEventListener('click', ()=>{
+        const y = parseInt(birthYear.value,10);
+        const m = parseInt(birthMonth.value,10);
+        const d = parseInt(birthDay.value,10);
+        if(isNaN(y) || isNaN(m) || isNaN(d)){ ageResult.textContent = 'সঠিক তারিখ দিন'; return; }
+        const birth = new Date(y,m,d);
+        if(isNaN(birth.getTime())) { ageResult.textContent = 'অবৈধ তারিখ'; return; }
+        // calculate difference
+        let yrs = today.getFullYear() - birth.getFullYear();
+        let mos = today.getMonth() - birth.getMonth();
+        let days = today.getDate() - birth.getDate();
+        if(days < 0){
+          // borrow previous month days
+          mos -= 1;
+          const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+          days += prevMonth.getDate();
+        }
+        if(mos < 0){
+          yrs -= 1;
+          mos += 12;
+        }
+        ageResult.textContent = `আপনার বয়স: ${yrs} বছর ${mos} মাস ${days} দিন`;
+      });
 
-    // Initialize everything
-    const startDate = new Date();
-    startDate.setMonth(startDate.getMonth() - 7);
-    generateCalendar(startDate, 127);
-    populateBirthSelectors();
-    scrollToToday();
+      // close modal on overlay click
+      ageModal.addEventListener('click', (ev)=>{
+        if(ev.target === ageModal) hideAgeModal();
+      });
+
+      /* -------------------------
+         Initialize
+         ------------------------- */
+      populateBirthSelectors();
+      renderMonths(renderedFrom, VISIBLE_MONTHS);
+
+      // scroll calendar so today's month is visible on load
+      setTimeout(()=>{
+        const el = calendarContainer.querySelector('.today');
+        if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 80);
+
+      // Expose for debugging if needed
+      window._cal = { renderMonths, renderedFrom, VISIBLE_MONTHS };
+    })();
   </script>
 </body>
 </html>
